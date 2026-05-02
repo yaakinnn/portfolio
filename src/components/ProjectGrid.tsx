@@ -8,41 +8,131 @@ interface ProjectGridProps {
   onFullScreen: (item: ProjectItem) => void;
 }
 
-const generateProjects = (category: string, baseId: string, count: number): ProjectItem[] => {
-  const images = [
-    'https://images.pexels.com/photos/1684187/pexels-photo-1684187.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    'https://images.pexels.com/photos/4065876/pexels-photo-4065876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    'https://images.pexels.com/photos/247502/pexels-photo-247502.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    'https://images.pexels.com/photos/331684/pexels-photo-331684.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    'https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    'https://images.pexels.com/photos/1024960/pexels-photo-1024960.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  ];
-  const videos = [
-    'https://cdn.pixabay.com/video/2021/04/12/70878-537446416_tiny.mp4',
-    'https://cdn.pixabay.com/video/2020/09/20/50484-462118320_tiny.mp4',
-    'https://cdn.pixabay.com/video/2022/09/06/130386-747352278_tiny.mp4',
-    'https://cdn.pixabay.com/video/2016/10/25/6157-188812684_tiny.mp4',
-    'https://cdn.pixabay.com/video/2018/12/11/20067-306915354_tiny.mp4',
-    'https://cdn.pixabay.com/video/2016/09/21/5496-184587635_tiny.mp4',
-  ];
-
-  return Array.from({ length: count }, (_, i) => ({
-    id: `${baseId}-${i + 1}`,
-    title: `${category} Project ${String(i + 1).padStart(2, '0')}`,
-    category: category,
-    thumbnail: images[i % images.length],
-    videoUrl: videos[i % videos.length],
-    description: `A showcase of visual excellence and professional editing in the ${category} space. Iteration ${i + 1}.`,
-  }));
-};
-
 const SAMPLE_PROJECTS: Record<string, ProjectItem[]> = {
-  "Short-form Content": generateProjects("Short-form", "sf", 15),
-  "Long-form Editing": generateProjects("Long-form", "lf", 15),
-  "Wedding Visuals": generateProjects("Wedding", "w", 15),
-  "Motion/3D Design": generateProjects("Motion/3D", "m", 15),
-  "Project Hub": generateProjects("Core Portfolio", "ph", 15),
+  "Short-form Content": [
+    {
+      id: "sf-1",
+      title: "Vertical Cinematic Reel",
+      category: "Short-form",
+      thumbnail: "https://images.pexels.com/photos/1684187/pexels-photo-1684187.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoUrl: "https://cdn.pixabay.com/video/2021/04/12/70878-537446416_tiny.mp4",
+      description: "Fast-paced vertical edit for social media with high-dynamic range color grading."
+    },
+    {
+      id: "sf-2",
+      title: "Product Showcase",
+      category: "Short-form",
+      thumbnail: "https://images.pexels.com/photos/4065876/pexels-photo-4065876.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoUrl: "https://cdn.pixabay.com/video/2020/09/20/50484-462118320_tiny.mp4",
+      description: "Clean, minimalist product reveal focusing on texture and lighting."
+    },
+    {
+      id: "sf-3",
+      title: "Urban Motion Edit",
+      category: "Short-form",
+      thumbnail: "https://images.pexels.com/photos/247502/pexels-photo-247502.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoUrl: "https://cdn.pixabay.com/video/2022/09/06/130386-747352278_tiny.mp4",
+      description: "Gritty urban environment showcase with synchronized sound design."
+    },
+     {
+      id: "sf-4",
+      title: "Urban Motion Edit",
+      category: "Short-form",
+      thumbnail: "https://images.pexels.com/photos/247502/pexels-photo-247502.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoUrl: "https://cdn.pixabay.com/video/2022/09/06/130386-747352278_tiny.mp4",
+      description: "Gritty urban environment showcase with synchronized sound design."
+    },
+     {
+      id: "sf-5",
+      title: "Urban Motion Edit",
+      category: "Short-form",
+      thumbnail: "https://images.pexels.com/photos/247502/pexels-photo-247502.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoUrl: "https://cdn.pixabay.com/video/2022/09/06/130386-747352278_tiny.mp4",
+      description: "Gritty urban environment showcase with synchronized sound design."
+    },
+     {
+      id: "sf-6",
+      title: "Urban Motion Edit",
+      category: "Short-form",
+      thumbnail: "https://images.pexels.com/photos/247502/pexels-photo-247502.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoUrl: "https://cdn.pixabay.com/video/2022/09/06/130386-747352278_tiny.mp4",
+      description: "Gritty urban environment showcase with synchronized sound design."
+    },
+     {
+      id: "sf-7",
+      title: "Urban Motion Edit",
+      category: "Short-form",
+      thumbnail: "https://images.pexels.com/photos/247502/pexels-photo-247502.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoUrl: "https://cdn.pixabay.com/video/2022/09/06/130386-747352278_tiny.mp4",
+      description: "Gritty urban environment showcase with synchronized sound design."
+    }
+  ],
+  "Long-form Editing": [
+    {
+      id: "lf-1",
+      title: "Documentary Feature",
+      category: "Long-form",
+      thumbnail: "https://images.pexels.com/photos/331684/pexels-photo-331684.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoUrl: "https://cdn.pixabay.com/video/2016/10/25/6157-188812684_tiny.mp4",
+      description: "Deep-dive storytelling focusing on human perspective and pacing."
+    },
+    {
+      id: "lf-2",
+      title: "Corporate Brand Story",
+      category: "Long-form",
+      thumbnail: "https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoUrl: "https://cdn.pixabay.com/video/2018/12/11/20067-306915354_tiny.mp4",
+      description: "Professional narrative explaining company values and vision."
+    }
+  ],
+  "Wedding Visuals": [
+    {
+      id: "w-1",
+      title: "Timeless Ceremony",
+      category: "Wedding",
+      thumbnail: "https://images.pexels.com/photos/1024960/pexels-photo-1024960.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoUrl: "https://cdn.pixabay.com/video/2016/09/21/5496-184587635_tiny.mp4",
+      description: "Emotional highlights from the main ceremony with soft-focus aesthetics."
+    },
+    {
+      id: "w-2",
+      title: "Bridal Preparation",
+      category: "Wedding",
+      thumbnail: "https://images.pexels.com/photos/3785927/pexels-photo-3785927.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoUrl: "https://cdn.pixabay.com/video/2023/10/24/186358-877717462_tiny.mp4",
+      description: "Candid moments captured during the morning preparations."
+    }
+  ],
+  "Motion/3D Design": [
+    {
+      id: "m-1",
+      title: "Abstract Geometry",
+      category: "Motion/3D",
+      thumbnail: "https://images.pexels.com/photos/4033148/pexels-photo-4033148.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoUrl: "https://cdn.pixabay.com/video/2023/06/07/166299-835081079_tiny.mp4",
+      description: "3D simulated environment exploring light and physics."
+    },
+    {
+      id: "m-2",
+      title: "Typographic Animation",
+      category: "Motion/3D",
+      thumbnail: "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoUrl: "https://cdn.pixabay.com/video/2021/08/31/87027-601429986_tiny.mp4",
+      description: "Kinetic typography using advanced motion graphics techniques."
+    }
+  ],
+  "Project Hub": [
+    {
+      id: "ph-1",
+      title: "Master Portfolio",
+      category: "Core Portfolio",
+      thumbnail: "https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoUrl: "https://cdn.pixabay.com/video/2021/08/04/83901-584732152_tiny.mp4",
+      description: "A comprehensive look at the best works across all categories."
+    }
+  ],
 };
+
 
 const ProjectCard = ({ project, onFullScreen }: { project: ProjectItem; onFullScreen: (p: ProjectItem) => void }) => {
   const [isHovered, setIsHovered] = useState(false);
