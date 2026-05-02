@@ -1,0 +1,10 @@
+{
+  "name": "Digital Atelier",
+  "description": "An OS-inspired high-end portfolio for a Videographer and 3D Motion Designer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "3D Animation",
+    "Motion Graphics",
+    "Video Editing"
+  ]
+}
