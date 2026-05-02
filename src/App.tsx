@@ -13,55 +13,59 @@ const InteractiveName = () => {
   const mouseY = useMotionValue(0);
   const springX = useSpring(mouseX, { damping: 50, stiffness: 200 });
   const springY = useSpring(mouseY, { damping: 50, stiffness: 200 });
+  const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
     };
+    const handleResize = () => {
+      setDimensions({ width: window.innerWidth, height: window.innerHeight });
+    };
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
-  const parallaxX = useTransform(springX, (v) => (v - window.innerWidth / 2) / 30);
-  const parallaxY = useTransform(springY, (v) => (v - window.innerHeight / 2) / 30);
+  const tx = useTransform(springX, (v) => (v - dimensions.width / 2) / 40);
+  const ty = useTransform(springY, (v) => (v - dimensions.height / 2) / 40);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-[-1] hidden md:block overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none z-[-2] hidden md:block overflow-hidden">
       {/* Background Subtle Gradient */}
       <motion.div 
         className="absolute inset-0 opacity-20"
         style={{
           background: useTransform(
             [springX, springY],
-            ([x, y]) => `radial-gradient(circle 400px at ${x}px ${y}px, rgba(255,255,255,0.1), transparent)`
+            ([x, y]) => `radial-gradient(circle 400px at ${x}px ${y}px, rgba(255,255,255,0.08), transparent 100%)`
           )
         }}
       />
       
-      {/* Interactive Name */}
-      <motion.div 
-        style={{ x: parallaxX, y: parallaxY }}
-        className="w-full h-full flex items-center justify-center"
-      >
-        <div className="relative">
-          <h2 className="text-[7vw] font-bold tracking-[-0.07em] text-white/5 select-none text-center leading-[0.8] uppercase whitespace-nowrap">
+      {/* Base Layer - Parallaxed */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <motion.div style={{ x: tx, y: ty }} className="relative">
+          <h2 className="text-[8vw] font-bold tracking-[-0.07em] text-white/5 select-none text-center leading-[0.8] uppercase whitespace-nowrap">
             MOCHAMMAD<br />AINUL YAKIN
           </h2>
-          <motion.div 
-            className="absolute inset-0 flex items-center justify-center mix-blend-overlay"
-            style={{
-              clipPath: useTransform(
-                [springX, springY],
-                ([x, y]) => {
-                  // Adjust x/y because we are inside a relative container that is center-aligned
-                  // This is a bit tricky, but for a fixed-inset experience, we focus on the mask
-                  return `circle(150px at ${x}px ${y}px)`;
-                }
-              )
-            }}
-          >
-             <h2 className="text-[7vw] font-bold tracking-[-0.07em] text-white/40 select-none text-center leading-[0.8] uppercase whitespace-nowrap">
+        </motion.div>
+      </div>
+
+      {/* Spotlight Layer - Pinned to Mouse with Fixed Container */}
+      <motion.div 
+        className="absolute inset-0 z-10 overflow-hidden"
+        style={{ 
+          clipPath: useTransform([springX, springY], ([x, y]) => `circle(200px at ${x}px ${y}px)`)
+        }}
+      >
+        <div className="absolute inset-0 flex items-center justify-center">
+          <motion.div style={{ x: tx, y: ty }}>
+            <h2 className="text-[8vw] font-bold tracking-[-0.07em] text-white/40 select-none text-center leading-[0.8] uppercase whitespace-nowrap">
               MOCHAMMAD<br />AINUL YAKIN
             </h2>
           </motion.div>

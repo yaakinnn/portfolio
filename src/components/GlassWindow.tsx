@@ -73,14 +73,14 @@ export const GlassWindow = ({ window: wState, onClose, onFocus, children }: Glas
           <div className="flex gap-2 mr-4">
             <button 
               onClick={(e) => { e.stopPropagation(); onClose(wState.id); }}
-              className="w-3 h-3 rounded-full bg-[#FF5F56] hover:bg-[#FF5F56]/80 flex items-center justify-center group transition-all active:scale-90"
+              className="w-3.5 h-3.5 rounded-full bg-[#FF5F56] hover:bg-[#FF5F56]/80 flex items-center justify-center group transition-all active:scale-90"
             >
               <X className={`w-2 h-2 text-black transition-opacity ${isMobile || isMediaWindow ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
             </button>
             {!isMobile && (
               <>
-                <div className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
-                <div className="w-3 h-3 rounded-full bg-[#27C93F]" />
+                <div className="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] opacity-90" />
+                <div className="w-3.5 h-3.5 rounded-full bg-[#27C93F] opacity-90" />
               </>
             )}
           </div>
