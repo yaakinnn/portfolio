@@ -122,7 +122,7 @@ export default function App() {
       <InteractiveName />
       {/* OS Status Bar */}
       <AnimatePresence>
-        {(!isMobile || !hasOpenWindow) && (
+        {!hasOpenWindow && (
           <motion.div 
             initial={{ y: -30 }}
             animate={{ y: 0 }}
@@ -150,7 +150,7 @@ export default function App() {
 
       {/* Background Hero / Digital Atelier Identity */}
       <AnimatePresence>
-        {(!isMobile || !hasOpenWindow) && (
+        {!hasOpenWindow && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -184,7 +184,7 @@ export default function App() {
 
       {/* Desktop Grid */}
       <AnimatePresence>
-        {(!isMobile || !hasOpenWindow) && (
+        {!hasOpenWindow && (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -231,7 +231,7 @@ export default function App() {
 
       {/* OS Dock */}
       <AnimatePresence>
-        {(!isMobile || !hasOpenWindow) && (
+        {!hasOpenWindow && (
           <motion.div
             initial={{ y: 100 }}
             animate={{ y: 0 }}
