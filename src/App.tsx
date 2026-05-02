@@ -177,7 +177,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Selected Works Tag */}
-      <div className="absolute top-[60px] right-10 text-right z-5 pointer-events-none hidden md:block">
+      <div className="absolute top-[60px] right-10 text-right z-0 pointer-events-none hidden md:block">
         <div className="text-[11px] opacity-30 uppercase tracking-[0.1em] mb-1">Selected Works</div>
         <div className="text-[24px] font-light tracking-tight">2026 PORTFOLIO</div>
       </div>

@@ -15,7 +15,7 @@ export const useWindowManager = () => {
         return prev;
       }
 
-      const nextZ = Math.max(0, ...prev.map(w => w.zIndex)) + 1;
+      const nextZ = Math.max(100, ...prev.map(w => w.zIndex)) + 1;
       const newWindow: WindowState = {
         id,
         type,
@@ -39,7 +39,7 @@ export const useWindowManager = () => {
 
   const focusWindow = useCallback((id: string) => {
     setWindows((prev) => {
-      const nextZ = Math.max(0, ...prev.map(w => w.zIndex)) + 1;
+      const nextZ = Math.max(100, ...prev.map(w => w.zIndex)) + 1;
       return prev.map(w => w.id === id ? { ...w, zIndex: nextZ } : w);
     });
     setActiveId(id);
