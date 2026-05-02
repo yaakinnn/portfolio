@@ -64,7 +64,7 @@ export const GlassWindow = ({ window: wState, onClose, onFocus, children }: Glas
         borderRadius: isMobile || isMediaWindow ? 0 : undefined
       }}
       className={`glass shadow-[0_40px_100px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden ${
-        isMobile || isMediaWindow ? 'w-full h-full inset-0' : 'min-w-[320px] min-h-[200px] rounded-xl'
+        isMobile || isMediaWindow ? 'w-full h-full inset-0' : 'w-[800px] max-w-[90vw] h-[600px] max-h-[80vh] rounded-xl'
       }`}
     >
       {/* Header */}

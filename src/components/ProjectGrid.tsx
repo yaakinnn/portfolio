@@ -8,23 +8,40 @@ interface ProjectGridProps {
   onFullScreen: (item: ProjectItem) => void;
 }
 
+const generateProjects = (category: string, baseId: string, count: number): ProjectItem[] => {
+  const images = [
+    'https://images.pexels.com/photos/1684187/pexels-photo-1684187.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    'https://images.pexels.com/photos/4065876/pexels-photo-4065876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    'https://images.pexels.com/photos/247502/pexels-photo-247502.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    'https://images.pexels.com/photos/331684/pexels-photo-331684.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    'https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    'https://images.pexels.com/photos/1024960/pexels-photo-1024960.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+  ];
+  const videos = [
+    'https://cdn.pixabay.com/video/2021/04/12/70878-537446416_tiny.mp4',
+    'https://cdn.pixabay.com/video/2020/09/20/50484-462118320_tiny.mp4',
+    'https://cdn.pixabay.com/video/2022/09/06/130386-747352278_tiny.mp4',
+    'https://cdn.pixabay.com/video/2016/10/25/6157-188812684_tiny.mp4',
+    'https://cdn.pixabay.com/video/2018/12/11/20067-306915354_tiny.mp4',
+    'https://cdn.pixabay.com/video/2016/09/21/5496-184587635_tiny.mp4',
+  ];
+
+  return Array.from({ length: count }, (_, i) => ({
+    id: `${baseId}-${i + 1}`,
+    title: `${category} Project ${String(i + 1).padStart(2, '0')}`,
+    category: category,
+    thumbnail: images[i % images.length],
+    videoUrl: videos[i % videos.length],
+    description: `A showcase of visual excellence and professional editing in the ${category} space. Iteration ${i + 1}.`,
+  }));
+};
+
 const SAMPLE_PROJECTS: Record<string, ProjectItem[]> = {
-  "Short-form Content": [
-    { id: 'sf1', title: 'Street Fashion Reel', category: 'Short-form', thumbnail: 'https://images.pexels.com/photos/1684187/pexels-photo-1684187.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', videoUrl: 'https://cdn.pixabay.com/video/2021/04/12/70878-537446416_tiny.mp4', description: 'Energetic street fashion edit for social media.' },
-    { id: 'sf2', title: 'Tech Review Shorts', category: 'Short-form', thumbnail: 'https://images.pexels.com/photos/4065876/pexels-photo-4065876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', videoUrl: 'https://cdn.pixabay.com/video/2020/09/20/50484-462118320_tiny.mp4', description: 'Punchy tech transitions and motion graphics.' },
-  ],
-  "Long-form Editing": [
-    { id: 'lf1', title: 'Nature Documentary', category: 'Long-form', thumbnail: 'https://images.pexels.com/photos/247502/pexels-photo-247502.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', videoUrl: 'https://cdn.pixabay.com/video/2022/09/06/130386-747352278_tiny.mp4', description: 'Cinematic storytelling for a nature preserve.' },
-    { id: 'lf2', title: 'YouTube Cinematic Vlog', category: 'Long-form', thumbnail: 'https://images.pexels.com/photos/331684/pexels-photo-331684.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', videoUrl: 'https://cdn.pixabay.com/video/2016/10/25/6157-188812684_tiny.mp4', description: 'Dynamic travel vlog with immersive sound design.' },
-  ],
-  "Wedding Visuals": [
-    { id: 'w1', title: 'Classic Romance', category: 'Wedding', thumbnail: 'https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', videoUrl: 'https://cdn.pixabay.com/video/2018/12/11/20067-306915354_tiny.mp4', description: 'Elegant wedding cinematography.' },
-    { id: 'w2', title: 'Sunset Vows', category: 'Wedding', thumbnail: 'https://images.pexels.com/photos/1024960/pexels-photo-1024960.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', videoUrl: 'https://cdn.pixabay.com/video/2016/09/21/5496-184587635_tiny.mp4', description: 'Golden hour wedding highlight film.' },
-  ],
-  "Motion/3D Design": [
-    { id: 'm1', title: 'Abstract Geometry', category: 'Motion/3D', thumbnail: 'https://images.pexels.com/photos/3785927/pexels-photo-3785927.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', videoUrl: 'https://cdn.pixabay.com/video/2023/10/24/186358-877717462_tiny.mp4', description: 'Procedural 3D animation loop.' },
-    { id: 'm2', title: 'Organic Flows', category: 'Motion/3D', thumbnail: 'https://images.pexels.com/photos/4033148/pexels-photo-4033148.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', videoUrl: 'https://cdn.pixabay.com/video/2023/06/07/166299-835081079_tiny.mp4', description: 'Fluid simulation experiments.' },
-  ]
+  "Short-form Content": generateProjects("Short-form", "sf", 15),
+  "Long-form Editing": generateProjects("Long-form", "lf", 15),
+  "Wedding Visuals": generateProjects("Wedding", "w", 15),
+  "Motion/3D Design": generateProjects("Motion/3D", "m", 15),
+  "Project Hub": generateProjects("Core Portfolio", "ph", 15),
 };
 
 const ProjectCard = ({ project, onFullScreen }: { project: ProjectItem; onFullScreen: (p: ProjectItem) => void }) => {
@@ -88,7 +105,7 @@ export const ProjectGrid = ({ category, onFullScreen }: ProjectGridProps) => {
   const projects = SAMPLE_PROJECTS[category] || [];
 
   return (
-    <div className="p-5 flex flex-col gap-6 h-full">
+    <div className="p-5 pb-24 flex flex-col gap-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {projects.map(p => (
           <ProjectCard key={p.id} project={p} onFullScreen={onFullScreen} />
@@ -96,12 +113,12 @@ export const ProjectGrid = ({ category, onFullScreen }: ProjectGridProps) => {
       </div>
       
       {projects.length === 0 && (
-        <div className="flex-1 flex items-center justify-center py-20 text-white/20 uppercase tracking-widest text-[10px]">
+        <div className="py-20 text-center text-white/20 uppercase tracking-widest text-[10px]">
           No items found in this directory
         </div>
       )}
 
-      <div className="mt-auto p-4 bg-white/[0.02] rounded-lg border border-dashed border-white/10">
+      <div className="mt-8 p-4 bg-white/[0.02] rounded-lg border border-dashed border-white/10 mb-8">
         <h4 className="text-[10px] uppercase tracking-[0.2em] text-white/30 mb-2">Category Context</h4>
         <p className="text-[11px] text-white/50 leading-relaxed font-light italic">
           Curated works in {category.toLowerCase()}. Exploring narrative structure and visual rhythm.
