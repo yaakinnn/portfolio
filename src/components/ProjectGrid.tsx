@@ -12,19 +12,19 @@ const SAMPLE_PROJECTS: Record<string, ProjectItem[]> = {
   "Short-form Content": [
     {
       id: "sf-1",
-      title: "Vertical Cinematic Reel",
+      title: "Neon City Reels",
       category: "Short-form",
       thumbnail: "https://images.pexels.com/photos/1684187/pexels-photo-1684187.jpeg?auto=compress&cs=tinysrgb&w=800",
-      videoUrl: "https://cdn.pixabay.com/video/2021/04/12/70878-537446416_tiny.mp4",
-      description: "Fast-paced vertical edit for social media with high-dynamic range color grading."
+      videoUrl: "https://www.instagram.com/reel/DOk8BN8kacO/",
+      description: "Visual exploration of urban neon aesthetics. (Instagram Reel Embed)"
     },
     {
       id: "sf-2",
-      title: "Product Showcase",
+      title: "Cinematic Product Reveal",
       category: "Short-form",
       thumbnail: "https://images.pexels.com/photos/4065876/pexels-photo-4065876.jpeg?auto=compress&cs=tinysrgb&w=800",
-      videoUrl: "https://cdn.pixabay.com/video/2020/09/20/50484-462118320_tiny.mp4",
-      description: "Clean, minimalist product reveal focusing on texture and lighting."
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      description: "Fast-paced product showcase with dynamic lighting. (YouTube Embed)"
     },
     {
       id: "sf-3",
@@ -32,7 +32,7 @@ const SAMPLE_PROJECTS: Record<string, ProjectItem[]> = {
       category: "Short-form",
       thumbnail: "https://images.pexels.com/photos/247502/pexels-photo-247502.jpeg?auto=compress&cs=tinysrgb&w=800",
       videoUrl: "https://cdn.pixabay.com/video/2022/09/06/130386-747352278_tiny.mp4",
-      description: "Gritty urban environment showcase with synchronized sound design."
+      description: "Gritty urban environment showcase with synchronized sound design. (Direct Video)"
     },
      {
       id: "sf-4",
@@ -73,7 +73,7 @@ const SAMPLE_PROJECTS: Record<string, ProjectItem[]> = {
       title: "Documentary Feature",
       category: "Long-form",
       thumbnail: "https://images.pexels.com/photos/331684/pexels-photo-331684.jpeg?auto=compress&cs=tinysrgb&w=800",
-      videoUrl: "https://cdn.pixabay.com/video/2016/10/25/6157-188812684_tiny.mp4",
+      videoUrl: "https://www.youtube.com/watch?v=QPrNB9TG24g&list=RDQPrNB9TG24g&start_radio=1",
       description: "Deep-dive storytelling focusing on human perspective and pacing."
     },
     {
@@ -137,55 +137,77 @@ const SAMPLE_PROJECTS: Record<string, ProjectItem[]> = {
 const ProjectCard = ({ project, onFullScreen }: { project: ProjectItem; onFullScreen: (p: ProjectItem) => void }) => {
   const [isHovered, setIsHovered] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const isShortForm = project.category === 'Short-form';
+  
+  // Check if it's a direct video link for preview
+  const isDirectVideo = project.videoUrl.match(/\.(mp4|webm|ogg|mov)$|^https:\/\/cdn\.pixabay\.com/i);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
-    videoRef.current?.play().catch(() => {});
+    if (isDirectVideo && videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    videoRef.current?.pause();
-    if (videoRef.current) videoRef.current.currentTime = 0;
+    if (isDirectVideo && videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
   };
 
   return (
     <motion.div 
-      className="project-card bg-white/[0.03] border border-white/[0.05] rounded-xl overflow-hidden relative group cursor-pointer"
+      className={`project-card bg-white/[0.03] border border-white/[0.05] rounded-xl overflow-hidden relative group cursor-pointer ${isShortForm ? 'row-span-2' : ''}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={() => onFullScreen(project)}
       layoutId={project.id}
     >
-      <div className="aspect-video relative">
+      <div className={`${isShortForm ? 'aspect-[9/16]' : 'aspect-video'} relative overflow-hidden bg-black`}>
         <img 
           src={project.thumbnail} 
           alt={project.title} 
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
-          style={{ opacity: isHovered ? 0 : 1 }}
+          className="absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+          style={{ 
+            opacity: (isHovered && isDirectVideo) ? 0 : 1,
+            filter: (isHovered && !isDirectVideo) ? 'brightness(0.7) blur(2px)' : 'none'
+          }}
         />
-        <video 
-          ref={videoRef}
-          src={project.videoUrl}
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
-          style={{ opacity: isHovered ? 1 : 0 }}
-        />
-        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-all" />
         
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="p-1.5 glass rounded-full">
-            <Maximize2 size={12} className="text-white" />
+        {isDirectVideo && (
+          <video 
+            ref={videoRef}
+            src={project.videoUrl}
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
+            style={{ opacity: isHovered ? 1 : 0 }}
+          />
+        )}
+
+        <div className={`absolute inset-0 transition-opacity duration-300 flex items-center justify-center ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="absolute inset-0 bg-black/20" />
+          {!isDirectVideo && (
+            <div className="z-10 p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
+              <Play size={20} className="text-white fill-white" />
+            </div>
+          )}
+        </div>
+        
+        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+          <div className="p-2 glass rounded-full">
+            <Maximize2 size={14} className="text-white" />
           </div>
         </div>
       </div>
       
-      <div className="p-4">
-        <div className="text-[9px] opacity-30 mb-1 truncate uppercase tracking-widest">{project.category}</div>
-        <div className="font-medium text-[13px] text-white/80 group-hover:text-white mb-1">{project.title}</div>
-        <p className="text-[10px] opacity-40 line-clamp-1">{project.description}</p>
+      <div className="p-4 glass-dark relative z-10">
+        <div className="text-[9px] text-white/40 mb-1 truncate uppercase tracking-widest">{project.category}</div>
+        <div className="font-medium text-[13px] text-white/90 group-hover:text-white mb-1 shadow-black drop-shadow-sm">{project.title}</div>
+        <p className="text-[10px] text-white/50 line-clamp-1 drop-shadow-sm">{project.description}</p>
       </div>
     </motion.div>
   );
@@ -193,10 +215,11 @@ const ProjectCard = ({ project, onFullScreen }: { project: ProjectItem; onFullSc
 
 export const ProjectGrid = ({ category, onFullScreen }: ProjectGridProps) => {
   const projects = SAMPLE_PROJECTS[category] || [];
+  const isShortForm = category === "Short-form Content";
 
   return (
     <div className="p-5 pb-24 flex flex-col gap-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className={`grid gap-4 ${isShortForm ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'}`}>
         {projects.map(p => (
           <ProjectCard key={p.id} project={p} onFullScreen={onFullScreen} />
         ))}

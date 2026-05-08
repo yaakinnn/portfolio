@@ -31,8 +31,6 @@ export const GlassWindow = ({ window: wState, onClose, onFocus, children }: Glas
     <motion.div
       drag={!isMobile && !isMediaWindow}
       dragMomentum={false}
-      x={isMobile || isMediaWindow ? 0 : x}
-      y={isMobile || isMediaWindow ? 0 : y}
       onDrag={(_, info) => {
         velocityX.set(info.velocity.x);
       }}
@@ -43,8 +41,8 @@ export const GlassWindow = ({ window: wState, onClose, onFocus, children }: Glas
         scale: 1, 
         x: isMobile || isMediaWindow ? 0 : undefined,
         y: isMobile || isMediaWindow ? 0 : undefined,
-        width: isMobile || isMediaWindow ? '100%' : undefined,
-        height: isMobile || isMediaWindow ? '100%' : undefined,
+        width: isMediaWindow ? '100vw' : (isMobile ? '100%' : undefined),
+        height: isMediaWindow ? '100vh' : (isMobile ? '100%' : undefined),
         top: isMobile || isMediaWindow ? 0 : undefined,
         left: isMobile || isMediaWindow ? 0 : undefined,
         filter: `blur(0px)`,
@@ -58,17 +56,19 @@ export const GlassWindow = ({ window: wState, onClose, onFocus, children }: Glas
       exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
       onPointerDown={() => onFocus(wState.id)}
       style={{ 
+        x: isMobile || isMediaWindow ? 0 : x,
+        y: isMobile || isMediaWindow ? 0 : y,
         zIndex: wState.zIndex,
         filter: useTransform(blur, b => `blur(${b}px)`),
         position: isMobile || isMediaWindow ? 'fixed' : 'absolute',
         borderRadius: isMobile || isMediaWindow ? 0 : undefined
       }}
       className={`glass shadow-[0_40px_100px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden ${
-        isMobile || isMediaWindow ? 'w-full h-full inset-0' : 'w-[800px] max-w-[90vw] h-[600px] max-h-[80vh] rounded-xl'
+        isMobile || isMediaWindow ? 'inset-0' : 'w-[800px] max-w-[90vw] h-[600px] max-h-[80vh] rounded-xl'
       }`}
     >
-      {/* Header */}
-      <div className={`h-10 flex items-center justify-between px-4 bg-white/5 border-b border-white/5 ${isMobile || isMediaWindow ? '' : 'cursor-grab active:cursor-grabbing'}`}>
+      {/* Header - Minimal for Media */}
+      <div className={`h-10 flex items-center justify-between px-4 ${isMediaWindow ? 'absolute top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/60 to-transparent border-none' : 'bg-white/5 border-b border-white/5 cursor-grab active:cursor-grabbing'}`}>
         <div className="flex gap-2 items-center">
           <div className="flex gap-2 mr-4">
             <button 
@@ -77,21 +77,21 @@ export const GlassWindow = ({ window: wState, onClose, onFocus, children }: Glas
             >
               <X className={`w-2 h-2 text-black transition-opacity ${isMobile || isMediaWindow ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
             </button>
-            {!isMobile && (
+            {!isMobile && !isMediaWindow && (
               <>
                 <div className="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] opacity-90" />
                 <div className="w-3.5 h-3.5 rounded-full bg-[#27C93F] opacity-90" />
               </>
             )}
           </div>
-          <span className="text-[10px] font-medium tracking-widest text-white/30 uppercase select-none">
+          <span className={`text-[10px] font-medium tracking-widest uppercase select-none ${isMediaWindow ? 'text-white' : 'text-white/30'}`}>
             {wState.title}
           </span>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto bg-black/20 custom-scrollbar">
+      <div className={`flex-1 overflow-auto custom-scrollbar ${isMediaWindow ? 'bg-black' : 'bg-black/20'}`}>
         {children}
       </div>
     </motion.div>

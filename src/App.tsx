@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'motion/react';
-import { Folder, Film, Scissors, Tv, Box } from 'lucide-react';
+import { Folder, Film, Scissors, Tv, Box, Info } from 'lucide-react';
 import { useWindowManager } from './hooks/useWindowManager';
 import { WindowType, ProjectItem } from './types';
 import { GlassWindow } from './components/GlassWindow';
@@ -149,32 +149,25 @@ export default function App() {
       </svg>
 
       {/* Background Hero / Digital Atelier Identity */}
-      <AnimatePresence>
-        {!hasOpenWindow && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute bottom-[100px] md:bottom-[120px] left-4 md:left-10 pointer-events-none z-0"
-          >
-            <motion.h1 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-[15vw] md:text-[120px] font-extralight tracking-[-2px] md:tracking-[-5px] leading-[0.8] select-none text-white whitespace-nowrap"
-            >
-              VISUAL<br />STORYTELLER
-            </motion.h1>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="mt-6 md:mt-4 text-[10px] md:text-[14px] uppercase tracking-[0.3em] font-light text-white/80"
-            >
-              Motion Designer & Editor
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div 
+        className="absolute bottom-[100px] md:bottom-[120px] left-4 md:left-10 pointer-events-none z-0"
+      >
+        <motion.h1 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="text-[15vw] md:text-[120px] font-extralight tracking-[-2px] md:tracking-[-5px] leading-[0.8] select-none text-white whitespace-nowrap"
+        >
+          VISUAL<br />STORYTELLER
+        </motion.h1>
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-6 md:mt-4 text-[10px] md:text-[14px] uppercase tracking-[0.3em] font-light text-white/80"
+        >
+          Motion Designer & Editor
+        </motion.div>
+      </div>
 
       {/* Selected Works Tag */}
       <div className="absolute top-[60px] right-10 text-right z-0 pointer-events-none hidden md:block">
@@ -324,26 +317,116 @@ const TerminalForm = () => {
   );
 };
 
+const MediaRenderer = ({ item }: { item: ProjectItem }) => {
+  const url = item.videoUrl;
+  const isShortForm = item.category === 'Short-form';
+  
+  const containerClass = isShortForm 
+    ? "aspect-[9/16] h-full max-h-screen my-auto mx-auto shadow-2xl overflow-hidden rounded-lg bg-black/40"
+    : "w-full h-full aspect-video my-auto mx-auto";
+
+  // YouTube Detection
+  const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+  if (ytMatch) {
+    const videoId = ytMatch[1];
+    return (
+      <div className={containerClass}>
+        <iframe
+          className="w-full h-full"
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+          title={item.title}
+          style={{ border: 0 }}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        ></iframe>
+      </div>
+    );
+  }
+
+  // Instagram Detection
+  if (url.includes('instagram.com')) {
+    const igMatch = url.match(/(?:p|reels|reel|tv)\/([^/?#&]+)/);
+    if (igMatch) {
+      const postId = igMatch[1];
+      return (
+        <div className={containerClass}>
+          <iframe
+            className="w-full h-full bg-white"
+            src={`https://www.instagram.com/reel/${postId}/embed`}
+            title={item.title}
+            style={{ border: 0 }}
+            scrolling="no"
+            /* @ts-expect-error - allowtransparency is non-standard but requested by React warning for DOM mapping */
+            allowtransparency="true"
+          ></iframe>
+        </div>
+      );
+    }
+  }
+
+  // Default Direct Video Player
+  return (
+    <div className={containerClass}>
+      <video 
+        src={url} 
+        autoPlay 
+        controls 
+        className="w-full h-full object-contain"
+      />
+    </div>
+  );
+};
+
+const MediaViewContent = ({ item }: { item: ProjectItem }) => {
+  const [showInfo, setShowInfo] = useState(false);
+  
+  return (
+    <div className="w-full h-full bg-black flex items-center justify-center relative group">
+      <MediaRenderer item={item} />
+      
+      {/* Visibility Toggle Button */}
+      <button 
+        onClick={() => setShowInfo(!showInfo)}
+        className={`absolute bottom-6 right-6 z-50 p-3.5 rounded-full transition-all duration-300 backdrop-blur-xl border ${
+          showInfo 
+            ? 'bg-white text-black border-white shadow-[0_0_30px_rgba(255,255,255,0.8)] scale-110' 
+            : 'bg-black/80 text-white border-white/30 hover:bg-white hover:text-black hover:border-white hover:scale-110 shadow-2xl active:scale-95'
+        }`}
+      >
+        <Info className="w-5 h-5 md:w-6 md:h-6" />
+      </button>
+
+      {/* Description Panel */}
+      <AnimatePresence>
+        {showInfo && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="absolute bottom-6 left-6 right-20 md:right-auto p-6 glass-dark max-w-md z-40 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl"
+          >
+            <h3 className="text-xl font-bold mb-2 text-white drop-shadow-md">{item.title}</h3>
+            <p className="text-sm text-white/80 drop-shadow-sm leading-relaxed">{item.description}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Desktop Hover Hint (Visible only when info is hidden) */}
+      {!showInfo && (
+        <div className="absolute bottom-10 left-10 p-4 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none hidden md:block">
+          <p className="text-[10px] uppercase tracking-widest text-white/40">Click info for details</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const WindowContent = ({ window, onMediaOpen }: { window: any; onMediaOpen: (item: ProjectItem) => void }) => {
   switch (window.type) {
     case WindowType.LAB:
       return <Laboratory />;
     case WindowType.MEDIA_FULLSCREEN:
-      const item = window.content as ProjectItem;
-      return (
-        <div className="w-full h-full bg-black flex items-center justify-center relative group">
-          <video 
-            src={item.videoUrl} 
-            autoPlay 
-            controls 
-            className="w-full h-full object-contain"
-          />
-          <div className="absolute bottom-10 left-10 p-6 glass max-w-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-            <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-            <p className="text-sm text-white/60">{item.description}</p>
-          </div>
-        </div>
-      );
+      return <MediaViewContent item={window.content as ProjectItem} />;
     case WindowType.FOLDER:
       return <ProjectGrid category={window.title} onFullScreen={onMediaOpen} />;
     case WindowType.ABOUT:
