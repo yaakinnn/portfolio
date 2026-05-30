@@ -1,0 +1,6 @@
+{
+  "name": "Cinematic Creator Portfolio",
+  "description": "An immersive, cinematic portfolio for a multidisciplined visual artist and motion graphic designer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
