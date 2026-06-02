@@ -4,6 +4,7 @@ import {
   Play, 
   Plus, 
   Trash2, 
+  Edit3,
   Image as ImageIcon, 
   Film, 
   Lock, 
@@ -14,7 +15,8 @@ import {
   Tag, 
   FolderPlus,
   RefreshCw,
-  FolderOpen
+  FolderOpen,
+  ArrowLeft
 } from 'lucide-react';
 
 interface PortfolioGridProps {
@@ -23,6 +25,8 @@ interface PortfolioGridProps {
   projectsList: Project[];
   saveProjectsList: (newList: Project[]) => void;
   isAdmin: boolean;
+  isFullGalleryView?: boolean;
+  setIsFullGalleryView?: (val: boolean) => void;
 }
 
 export default function PortfolioGrid({ 
@@ -30,7 +34,9 @@ export default function PortfolioGrid({
   onSelectProject, 
   projectsList, 
   saveProjectsList,
-  isAdmin 
+  isAdmin,
+  isFullGalleryView = false,
+  setIsFullGalleryView
 }: PortfolioGridProps) {
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
@@ -44,16 +50,22 @@ export default function PortfolioGrid({
   const [newDate, setNewDate] = useState<string>('');
   const [newDuration, setNewDuration] = useState<string>('');
   const [newImageUrl, setNewImageUrl] = useState<string>('');
+  const [newBannerUrl, setNewBannerUrl] = useState<string>('');
   const [newVideoUrl, setNewVideoUrl] = useState<string>('');
   const [newTagsStr, setNewTagsStr] = useState<string>('');
   const [newAspect, setNewAspect] = useState<'landscape' | 'portrait' | 'square'>('landscape');
+  const [newDescription, setNewDescription] = useState<string>('');
   const [formError, setFormError] = useState<string>('');
 
   const categories = ['All', 'Videography', 'Photography', 'Motion Graphics', 'Video Editing'];
 
-  const filteredProjects = activeCategory === 'All'
+  const baseProjects = isFullGalleryView
     ? projectsList
-    : projectsList.filter(p => p.category === activeCategory);
+    : projectsList.filter(p => p.isFeatured);
+
+  const filteredProjects = activeCategory === 'All'
+    ? baseProjects
+    : baseProjects.filter(p => p.category === activeCategory);
 
   // High quality curated presets to pre-fill image input with a single touch
   const imagePresets = [
@@ -73,6 +85,8 @@ export default function PortfolioGrid({
     { label: 'None (Still Image only)', url: '' }
   ];
 
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+
   const handleCreateProject = (e: FormEvent) => {
     e.preventDefault();
 
@@ -90,27 +104,52 @@ export default function PortfolioGrid({
       .map(tag => tag.trim())
       .filter(tag => tag.length > 0);
 
-    const newProj: Project = {
-      id: `custom-pr-${Date.now()}`,
-      title: newTitle.trim(),
-      category: newCategory,
-      role: newRole.trim() || 'Lead Creator',
-      client: newClient.trim() || 'Independent Release',
-      date: newDate.trim() || 'May 2026',
-      duration: newDuration.trim() || undefined,
-      imageUrl: newImageUrl.trim(),
-      videoSrc: newVideoUrl.trim() || undefined,
-      tags: tagsArray.length > 0 ? tagsArray : ['Creative Flow'],
-      isFeatured: false,
-      aspect: newAspect,
-      storyboard: [
-        { timecode: 'Frame 1', description: 'Establishing main mood theme', visualCue: 'Macro focus capturing high-contrast light gradients.' },
-        { timecode: 'Frame 2', description: 'Dynamic movement sequence', visualCue: 'Pan horizontal action track paired with sub-bass pulses.' }
-      ],
-      mediaLinks: []
-    };
+    if (editingProjectId) {
+      // Editing Mode
+      const updatedList = projectsList.map(p => {
+        if (p.id === editingProjectId) {
+          return {
+            ...p,
+            title: newTitle.trim(),
+            category: newCategory,
+            role: newRole.trim() || 'Lead Creator',
+            client: newClient.trim() || 'Independent Release',
+            date: newDate.trim() || 'May 2026',
+            duration: newDuration.trim() || undefined,
+            imageUrl: newImageUrl.trim(),
+            bannerUrl: newBannerUrl.trim() || undefined,
+            videoSrc: newVideoUrl.trim() || undefined,
+            tags: tagsArray.length > 0 ? tagsArray : ['Creative Flow'],
+            aspect: newAspect,
+            description: newDescription.trim() || 'Deskripsi project sinematik baru.',
+          };
+        }
+        return p;
+      });
+      saveProjectsList(updatedList);
+      setEditingProjectId(null);
+    } else {
+      // Creation Mode
+      const newProj: Project = {
+        id: `custom-pr-${Date.now()}`,
+        title: newTitle.trim(),
+        category: newCategory,
+        role: newRole.trim() || 'Lead Creator',
+        client: newClient.trim() || 'Independent Release',
+        date: newDate.trim() || 'May 2026',
+        duration: newDuration.trim() || undefined,
+        imageUrl: newImageUrl.trim(),
+        bannerUrl: newBannerUrl.trim() || undefined,
+        videoSrc: newVideoUrl.trim() || undefined,
+        tags: tagsArray.length > 0 ? tagsArray : ['Creative Flow'],
+        isFeatured: false,
+        aspect: newAspect,
+        description: newDescription.trim() || 'Deskripsi project sinematik baru.',
+        mediaUrls: [newImageUrl.trim()]
+      };
 
-    saveProjectsList([newProj, ...projectsList]);
+      saveProjectsList([newProj, ...projectsList]);
+    }
 
     // Reset controls
     setNewTitle('');
@@ -119,8 +158,50 @@ export default function PortfolioGrid({
     setNewDate('');
     setNewDuration('');
     setNewImageUrl('');
+    setNewBannerUrl('');
     setNewVideoUrl('');
     setNewTagsStr('');
+    setNewDescription('');
+    setFormError('');
+    setShowCreatorForm(false);
+  };
+
+  const handleEditProjectClick = (project: Project, e: MouseEvent) => {
+    e.stopPropagation(); // Avoid opening modal details
+    setEditingProjectId(project.id);
+    setNewTitle(project.title);
+    setNewCategory(project.category);
+    setNewRole(project.role);
+    setNewClient(project.client);
+    setNewDate(project.date);
+    setNewDuration(project.duration || '');
+    setNewImageUrl(project.imageUrl);
+    setNewBannerUrl(project.bannerUrl || '');
+    setNewVideoUrl(project.videoSrc || '');
+    setNewTagsStr(project.tags.join(', '));
+    setNewAspect(project.aspect);
+    setNewDescription(project.description || '');
+    setShowCreatorForm(true);
+    
+    // Smooth scroll to the form panel
+    const element = document.getElementById('portfolio');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProjectId(null);
+    setNewTitle('');
+    setNewRole('');
+    setNewClient('');
+    setNewDate('');
+    setNewDuration('');
+    setNewImageUrl('');
+    setNewBannerUrl('');
+    setNewVideoUrl('');
+    setNewTagsStr('');
+    setNewDescription('');
     setFormError('');
     setShowCreatorForm(false);
   };
@@ -149,22 +230,38 @@ export default function PortfolioGrid({
     >
       <div className="max-w-7xl mx-auto px-6 md:px-16">
         
+        {/* Gallery Page Back Link */}
+        {isFullGalleryView && setIsFullGalleryView && (
+          <button
+            onClick={() => {
+              setIsFullGalleryView(false);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="flex items-center gap-2 text-zinc-500 hover:text-amber-500 font-mono text-[11px] uppercase tracking-wider mb-8 transition-colors cursor-pointer group"
+          >
+            <ArrowLeft size={14} className="transform group-hover:-translate-x-1 duration-200" />
+            Kembali ke Beranda Utama
+          </button>
+        )}
+
         {/* Gallery Headers */}
         <div className="flex flex-col xl:flex-row xl:items-end justify-between mb-12 gap-8">
           <div className="space-y-4">
             <span className="font-mono text-zinc-500 text-xs sm:text-sm uppercase tracking-widest font-semibold flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-              02 // CURATED EXHIBITIONS
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+              {isFullGalleryView ? '02 // THE COMPLETE EXHIBITION' : '02 // THE BEST FROM THE BEST'}
             </span>
             <h2 className={`text-3xl sm:text-5xl font-bold font-display tracking-tight leading-none ${
               theme === 'dark' ? 'text-white' : 'text-zinc-950'
             }`}>
-              UNRECONSTRUCTED SCENES.
+              {isFullGalleryView ? 'FULL GALLERY ARCHIVES.' : 'SIGNATURE SELECTION.'}
             </h2>
             <p className={`text-xs sm:text-sm max-w-xl leading-relaxed ${
               theme === 'dark' ? 'text-zinc-400' : 'text-zinc-650'
             }`}>
-              Setiap grid menyajikan snippet sinematik interaktif. Klik pada project untuk membuka console data referensi, link eksternal (YouTube, Drive, Instagram), dan link shareable.
+              {isFullGalleryView 
+                ? 'Arsip digital lengkap yang menampung seluruh karya filmic, fotografi komersil, animasi dan motion graphics yang telah di-kurasi.'
+                : 'Pilihan karya termegah dan terbaik ("The Best from the Best") untuk menampilkan kredensial serta dedikasi artistik sinematografi kami.'}
             </p>
           </div>
 
@@ -207,7 +304,7 @@ export default function PortfolioGrid({
               <h3 className={`font-display font-semibold text-lg uppercase tracking-wider ${
                 theme === 'dark' ? 'text-white' : 'text-zinc-900'
               }`}>
-                Visual Project Creator Panel
+                {editingProjectId ? 'PROSES EDITING DATA PROJECT' : 'Visual Project Creator Panel'}
               </h3>
             </div>
 
@@ -381,6 +478,42 @@ export default function PortfolioGrid({
                     }`}
                   />
                 </div>
+
+                {/* Banner image URL option */}
+                <div>
+                  <label className="block text-[10px] text-zinc-500 uppercase font-mono mb-2">
+                    Link Image Banner Detail (Opsional)
+                  </label>
+                  <input
+                    type="url"
+                    value={newBannerUrl}
+                    onChange={(e) => setNewBannerUrl(e.target.value)}
+                    placeholder="https://images.unsplash.com/... (Resolusi Tinggi)"
+                    className={`w-full text-xs rounded-xl p-3 border focus:outline-none focus:ring-0 ${
+                      theme === 'dark'
+                        ? 'bg-zinc-900 border-zinc-800 text-white focus:border-zinc-500'
+                        : 'bg-zinc-50 border-zinc-200 text-zinc-900 focus:border-zinc-400'
+                    }`}
+                  />
+                </div>
+              </div>
+
+              {/* Full-width project description narrative */}
+              <div>
+                <label className="block text-[10px] text-zinc-500 uppercase font-mono mb-2">
+                  Deskripsi / Narasi Storytelling Project
+                </label>
+                <textarea
+                  rows={3}
+                  value={newDescription}
+                  onChange={(e) => setNewDescription(e.target.value)}
+                  placeholder="Ceritakan proses kreatif, konsep estetik, dan makna di balik visual pameran ini..."
+                  className={`w-full text-xs rounded-xl p-3 border focus:outline-none focus:ring-0 resize-none ${
+                    theme === 'dark'
+                      ? 'bg-zinc-900 border-zinc-800 text-white focus:border-zinc-500'
+                      : 'bg-zinc-50 border-zinc-200 text-zinc-900 focus:border-zinc-400'
+                  }`}
+                />
               </div>
 
               {/* Cover Image Preset picker & Input */}
@@ -465,7 +598,7 @@ export default function PortfolioGrid({
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
-                  onClick={() => setShowCreatorForm(false)}
+                  onClick={handleCancelEdit}
                   className={`px-6 py-3 font-mono font-bold tracking-wider text-2xs uppercase rounded-xl border transition-all cursor-pointer ${
                     theme === 'dark'
                       ? 'border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-900'
@@ -478,8 +611,8 @@ export default function PortfolioGrid({
                   type="submit"
                   className="bg-amber-500 hover:bg-amber-600 text-white font-mono font-bold tracking-wider text-2xs uppercase px-8 py-3 rounded-xl transition-all shadow-md shadow-amber-500/10 cursor-pointer flex items-center gap-1.5 hover:scale-[1.01]"
                 >
-                  <Plus size={12} />
-                  TERBITKAN KE GALLERY
+                  {editingProjectId ? <Edit3 size={12} /> : <Plus size={12} />}
+                  {editingProjectId ? 'SIMPAN PERUBAHAN PROJECT' : 'TERBITKAN KE GALLERY'}
                 </button>
               </div>
             </form>
@@ -533,15 +666,16 @@ export default function PortfolioGrid({
           </div>
         ) : (
           <div className="masonry-grid">
-            {filteredProjects.map((project, idx) => {
-              // Align masonry item sizing
+            {filteredProjects.map((project) => {
+              // Align masonry item sizing based on actual custom aspect ratio defined!
               let masonryClass = '';
-              if (idx === 0) {
-                masonryClass = 'masonry-item-tall masonry-item-wide';
-              } else if (idx === 1 || idx === 2) {
-                masonryClass = 'masonry-item-tall';
-              } else if (idx === 3) {
-                masonryClass = 'masonry-item-wide';
+              if (project.aspect === 'portrait') {
+                masonryClass = 'aspect-[3/4] col-span-1';
+              } else if (project.aspect === 'square') {
+                masonryClass = 'aspect-square col-span-1';
+              } else {
+                // landscape
+                masonryClass = 'aspect-[16/10] sm:aspect-video md:col-span-2 col-span-1';
               }
 
               const isHovered = hoveredProjectId === project.id;
@@ -565,11 +699,11 @@ export default function PortfolioGrid({
                       alt={project.title}
                       referrerPolicy="no-referrer"
                       className={`w-full h-full object-cover transition-all duration-700 ease-out ${
-                        isHovered && project.videoSrc ? 'scale-105 opacity-0' : 'scale-100 opacity-80'
+                        isHovered ? 'scale-105 opacity-100' : 'scale-100 opacity-80'
                       }`}
                     />
                     
-                    {/* Interactive Dynamic Short Visual Loop Snippet on Hover */}
+                    {/* Simulated Hover Loop Video */}
                     {project.videoSrc && (
                       <video
                         src={project.videoSrc}
@@ -577,12 +711,12 @@ export default function PortfolioGrid({
                         loop
                         muted
                         playsInline
-                        className={`absolute inset-0 w-full h-full object-cover pointer-events-none transition-all duration-500 ease-out ${
-                          isHovered ? 'opacity-85 scale-105' : 'opacity-0 scale-100'
+                        className={`absolute inset-0 w-full h-full object-cover z-5 transition-opacity duration-300 pointer-events-none ${
+                          isHovered ? 'opacity-90' : 'opacity-0'
                         }`}
                       />
                     )}
-
+                    
                     {/* Shading layer */}
                     <div className={`absolute inset-0 z-10 transition-colors duration-400 ${
                       theme === 'dark'
@@ -613,38 +747,62 @@ export default function PortfolioGrid({
                     </div>
                   </div>
 
-                  {/* Delete Button overlay on Hover for Admin */}
+                  {/* Edit & Delete Buttons overlay on Hover for Admin */}
                   {isAdmin && (
-                    <button
-                      type="button"
-                      onClick={(e) => handleDeleteProject(project.id, e)}
-                      title="Hapus project"
-                      className="absolute top-6 left-6 z-35 p-2 rounded-lg bg-black/60 hover:bg-red-600 backdrop-blur-md text-zinc-300 hover:text-white transition-all shadow-md cursor-pointer border border-zinc-800/40 hover:border-red-500/40 hover:scale-105"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    <div className="absolute top-6 left-6 z-35 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => handleEditProjectClick(project, e)}
+                        title="Edit project"
+                        className="p-2 rounded-lg bg-black/60 hover:bg-amber-500 backdrop-blur-md text-zinc-300 hover:text-white transition-all shadow-md cursor-pointer border border-zinc-800/40 hover:border-amber-500/40 hover:scale-105"
+                      >
+                        <Edit3 size={13} />
+                      </button>
+                      
+                      <button
+                        type="button"
+                        onClick={(e) => handleDeleteProject(project.id, e)}
+                        title="Hapus project"
+                        className="p-2 rounded-lg bg-black/60 hover:bg-red-600 backdrop-blur-md text-zinc-300 hover:text-white transition-all shadow-md cursor-pointer border border-zinc-800/40 hover:border-red-500/40 hover:scale-105"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
                   )}
 
-                  {/* SOUND PITTING VISUALS ON HOVERING */}
+                  {/* DETAILED ACTION PLATES ON HOVERING */}
                   {isHovered && (
-                    <div className="absolute top-6 right-6 z-35 animate-fade-in flex items-end gap-1.5 p-2 rounded-lg bg-black/40 backdrop-blur-md text-white select-none">
-                      <span className="font-mono text-[8px] uppercase tracking-wider mr-1 pb-0.5">
-                        {project.videoSrc ? 'PLAYING SNIPPET' : 'EXPAND STUDY'}
+                    <div className="absolute top-6 right-6 z-35 animate-fade-in flex items-center gap-1.5 p-2 px-3 rounded-lg bg-black/60 backdrop-blur-md text-white border border-white/10 select-none">
+                      <span className="font-mono text-[9px] uppercase tracking-wider font-semibold">
+                        Buka Detail
                       </span>
-                      {project.videoSrc ? (
-                        <>
-                          <div className="pulse-bar"></div>
-                          <div className="pulse-bar"></div>
-                          <div className="pulse-bar"></div>
-                        </>
-                      ) : (
-                        <Play size={8} className="fill-current" />
-                      )}
+                      <Play size={8} className="fill-current text-white" />
                     </div>
                   )}
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {/* Bottom Creative CTA to transition into Complete Showroom view */}
+        {!isFullGalleryView && setIsFullGalleryView && (
+          <div className="mt-16 text-center animate-fade-in flex flex-col items-center justify-center space-y-4">
+            <div className="h-[1px] w-12 bg-amber-500/50 mb-2"></div>
+            <p className={`text-3xs font-mono tracking-widest uppercase ${theme === 'dark' ? 'text-zinc-500' : 'text-zinc-400'}`}>
+              Tertarik melihat rangkuman seluruh logbook?
+            </p>
+            <button
+              onClick={() => {
+                setIsFullGalleryView(true);
+                setTimeout(() => {
+                  document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }}
+              className="group inline-flex items-center gap-3 font-mono font-bold tracking-widest text-[10px] uppercase px-8 py-4.5 rounded-full transition-all border cursor-pointer hover:scale-[1.02] shadow-xl hover:shadow-amber-500/5 hover:border-amber-500/50 hover:text-amber-500 bg-transparent text-zinc-450 border-zinc-800 hover:bg-zinc-900/40"
+            >
+              EXPLORE FULL GALLERY ARCHIVE ({projectsList.length} PROJECTS) →
+            </button>
           </div>
         )}
       </div>

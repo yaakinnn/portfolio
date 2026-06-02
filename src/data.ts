@@ -1,9 +1,3 @@
-export interface StoryboardStep {
-  timecode: string;
-  description: string;
-  visualCue: string;
-}
-
 export interface Project {
   id: string;
   title: string;
@@ -13,12 +7,13 @@ export interface Project {
   date: string;
   duration?: string;
   imageUrl: string;
+  bannerUrl?: string; // Optional custom top banner/poster image
   videoSrc?: string; // Short video loop or canvas type
   tags: string[];
   isFeatured: boolean;
   aspect: 'landscape' | 'portrait' | 'square';
-  storyboard: StoryboardStep[];
-  mediaLinks?: string[];
+  description?: string; // Detailed single-narrative description for project showcase
+  mediaUrls?: string[]; // Direct visual asset URLs for carousel showcase (no parsing)
 }
 
 export const PORTFOLIO_PROJECTS: Project[] = [
@@ -31,20 +26,15 @@ export const PORTFOLIO_PROJECTS: Project[] = [
     date: 'Dec 2025',
     duration: '01:15',
     imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
+    bannerUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=90',
     videoSrc: 'https://assets.mixkit.co/videos/preview/mixkit-flying-over-a-futuristic-minimalist-city-at-night-42294-large.mp4',
     tags: ['Cinema 4D', 'Redshift', 'After Effects', 'CAD Assembly'],
     isFeatured: true,
     aspect: 'landscape',
-    storyboard: [
-      { timecode: '00:00 - 00:15', description: 'Establishing geometric shapes', visualCue: 'Macro wireframe render with amber neon lighting transitions into solid brutalist elements.' },
-      { timecode: '00:15 - 00:40', description: 'Dynamic Camera Fly-through', visualCue: 'Linear motion passing through concrete pillars synchronized to minimal sub-harmonic pulses.' },
-      { timecode: '00:40 - 01:00', description: 'Textural Focus & Color Splash', visualCue: 'Rough concrete meets fluid iridescent mercury textures under golden cinematic hour lights.' },
-      { timecode: '01:00 - 01:15', description: 'Logo Resolving Scene', visualCue: 'Brutalist structures compress abstractly into a clean modern monochrome vector logomark.' }
-    ],
-    mediaLinks: [
-      'https://www.youtube.com/watch?v=EngW7tLk6R8',
-      'https://www.instagram.com/p/Ct9uF9XMcV3/',
-      'https://drive.google.com/file/d/1t_2eWp_fD-1z1N_hGj_H5a2gU8Hnpx3Y/view?usp=sharing'
+    description: 'Sebuah eksplorasi visual mengenai struktur brutalist urban dalam dimensi tiga dimensi modern. Menggunakan pencahayaan dinamis dan partikel neon untuk menciptakan ketegangan artistik antara soliditas beton dan kefanaan cahaya digital.',
+    mediaUrls: [
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1200&q=80'
     ]
   },
   {
@@ -56,19 +46,15 @@ export const PORTFOLIO_PROJECTS: Project[] = [
     date: 'Oct 2025',
     duration: '01:30',
     imageUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&q=80',
+    bannerUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1600&q=90',
     videoSrc: 'https://assets.mixkit.co/videos/preview/mixkit-man-holding-a-video-camera-filming-at-sunset-41484-large.mp4',
     tags: ['RED V-Raptor', 'Zeiss Supreme Primes', 'DaVinci Resolve', 'HDR'],
     isFeatured: true,
     aspect: 'landscape',
-    storyboard: [
-      { timecode: '00:00 - 00:20', description: 'The Fog Scene', visualCue: 'Desaturated, misty woodland. Soft bokeh focus on key actor. Low-key keylight.' },
-      { timecode: '00:20 - 00:55', description: 'The Chase Sequence', visualCue: 'Handheld steadycam tracking shot. Rapid shutter angle (45 degrees) generating high action clarity.' },
-      { timecode: '00:55 - 01:15', description: 'Metaphysical Monologue', visualCue: 'Ultra close-up in 8K anamorphic. Blue color temperature grading contrast with warm face reflections.' },
-      { timecode: '01:15 - 01:30', description: 'The Epilogue Epiphany', visualCue: 'Slow zoom-out drone shot centered on solitary figure standing on basalt monolith cliffs.' }
-    ],
-    mediaLinks: [
-      'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
-      'https://drive.google.com/file/d/1t_2eWp_fD-1z1N_hGj_H5a2gU8Hnpx3Y/view?usp=sharing'
+    description: 'Kisah visual sunyi mengenai pencarian makna di tengah belantara hutan berkabut tebal. Karakteristik grading film neo-noir yang rendah cahaya memberikan atmosfer misteri yang mendalam pada setiap detiknya.',
+    mediaUrls: [
+      'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1200&q=80'
     ]
   },
   {
@@ -79,13 +65,13 @@ export const PORTFOLIO_PROJECTS: Project[] = [
     client: 'VOGUE Magazine',
     date: 'Sep 2025',
     imageUrl: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=800&q=80',
+    bannerUrl: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1400&q=90',
     tags: ['Sony Alpha A1', '85mm f/1.2 GM', 'Neon Accents', 'Gelled Strobes'],
     isFeatured: false,
     aspect: 'portrait',
-    storyboard: [
-      { timecode: 'Frame 1', description: 'The Wet Glaze', visualCue: 'Model reflecting magenta neon strip lights through holographic plastic rain coat.' },
-      { timecode: 'Frame 2', description: 'Retro-Futuristic Street Focus', visualCue: 'Puddle reflections of high-rise billboards in central Tokyo, foreground model framed off-center.' },
-      { timecode: 'Frame 3', description: 'High Motion Blur Portrait', visualCue: 'Slow shutter zoom flash technique capturing double-exposure effects of city lights framing the eyes.' }
+    description: 'Sesi fotografi editorial mode bertema retro-futuristik di tengah gemerlap lampu neon Tokyo. Kombinasi kontras tinggi antara rona magenta dan cyan dengan plastik holografik pakaian model memperkuat estetika cyberpunk yang dingin.',
+    mediaUrls: [
+      'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=800&q=80'
     ]
   },
   {
@@ -97,14 +83,14 @@ export const PORTFOLIO_PROJECTS: Project[] = [
     date: 'Nov 2025',
     duration: '00:45',
     imageUrl: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1200&q=80',
+    bannerUrl: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1600&q=90',
     videoSrc: 'https://assets.mixkit.co/videos/preview/mixkit-athlete-running-on-stadium-tracks-at-sunrise-33886-large.mp4',
     tags: ['Premiere Pro', 'Heavy FPV Drone Rushes', 'Sound Design', 'Rhythmic SpeedRamps'],
     isFeatured: true,
     aspect: 'landscape',
-    storyboard: [
-      { timecode: '00:00 - 00:10', description: 'Sub-second Matchcuts', visualCue: 'Lacing shoes, inhaling, block-start. Fast cut matching sound of deep breath to initial steps.' },
-      { timecode: '00:10 - 00:30', description: 'Speed Ramping Runout', visualCue: 'Drone flies low. Timeline ramps from 10% speed up to 800% speed exactly on the runner\'s swing beats.' },
-      { timecode: '00:30 - 00:45', description: 'Visual Climax Scene', visualCue: 'Split-screen glitch panel tracking cardiac monitor patterns over high contrast black and white running sequences.' }
+    description: 'Video intro atletik berenergi tinggi dengan teknik penyuntingan matchcut dinamas dan speed ramping presisi untuk menangkap intensitas detak jantung sebelum memulai lari cepat.',
+    mediaUrls: [
+      'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1200&q=80'
     ]
   },
   {
@@ -115,12 +101,13 @@ export const PORTFOLIO_PROJECTS: Project[] = [
     client: 'Prism Art Space',
     date: 'Jul 2025',
     imageUrl: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=800&q=80',
+    bannerUrl: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1400&q=90',
     tags: ['Laowa Macro Pro', 'Polarizing Filters', 'Chemical Reactions', 'Studio Gels'],
     isFeatured: false,
     aspect: 'portrait',
-    storyboard: [
-      { timecode: 'Frame 1', description: 'Chemical Collisions', visualCue: 'Macro capture of oil droplets on dish soap swirling under magenta and cyan studio lights.' },
-      { timecode: 'Frame 2', description: 'Iridescent Bubbles', visualCue: 'Hyper-detailed close up of bubble structures breaking, creating beautiful interference light lines.' }
+    description: 'Studi fotografi makro mengenai interaksi kimiawi sabun pencuci piring dan cairan berwarna di bawah pancaran sinar ultraviolet, menangkap formasi keindahan geometri fractal luminal yang mengalir.',
+    mediaUrls: [
+      'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=800&q=80'
     ]
   },
   {
@@ -132,14 +119,14 @@ export const PORTFOLIO_PROJECTS: Project[] = [
     date: 'Aug 2025',
     duration: '01:00',
     imageUrl: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80',
+    bannerUrl: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1600&q=90',
     videoSrc: 'https://assets.mixkit.co/videos/preview/mixkit-car-headlights-driving-on-a-wet-highway-at-night-41584-large.mp4',
     tags: ['Houdini', 'Octane Render', 'Nuke Compositing', 'Dynamic Physics'],
     isFeatured: false,
     aspect: 'landscape',
-    storyboard: [
-      { timecode: '00:00 - 00:20', description: 'Aerodynamic Fluid Trails', visualCue: 'Simulating wind tunnel friction lines around car chassis with 1 million glowing neon particle flows.' },
-      { timecode: '00:20 - 00:45', description: 'Wheel-well Exploded Spec', visualCue: 'Interactive 3D model disassembly showing hydraulic brakes and tires under mechanical stress.' },
-      { timecode: '00:45 - 01:00', description: 'Acceleration Vapor Shockwave', visualCue: 'Zero to sixty shockwave explosion of asphalt particles. Epic wide-angle visual culmination.' }
+    description: 'Integrasi simulasi partikel angin aerodinamis di sekitar sasis mobil Audi menggunakan visualisasi 3D mutakhir, memproyeksikan kecepatan, friksi gas, dan kestabilan mutlak.',
+    mediaUrls: [
+      'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80'
     ]
   },
   {
@@ -150,11 +137,13 @@ export const PORTFOLIO_PROJECTS: Project[] = [
     client: 'Exhibition of Shadows',
     date: 'Jun 2025',
     imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+    bannerUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1400&q=90',
     tags: ['Medium Format', 'Hasselblad H6D', 'Rembrandt Lighting', 'Film Grain'],
     isFeatured: false,
     aspect: 'square',
-    storyboard: [
-      { timecode: 'Frame 1', description: 'The Gaze', visualCue: 'High contrast monochrome studio lighting highlighting skin pores, deep eye reflections of circular softboxes.' }
+    description: 'Sebuah studi potret hitam-putih berformat medium menggunakan teknik pencahayaan Rembrandt yang tajam untuk menonjolkan tekstur kulit, ketebalan bayangan wajah, dan spektrum emosi subjek secara dramatis.',
+    mediaUrls: [
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80'
     ]
   }
 ];

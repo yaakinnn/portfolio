@@ -88,6 +88,8 @@ export default function App() {
     }
   }, [selectedProject]);
 
+  const [isFullGalleryPage, setIsFullGalleryPage] = useState<boolean>(false);
+
   useEffect(() => {
     // Dynamic theme binding to document body element
     const body = document.body;
@@ -110,20 +112,56 @@ export default function App() {
       {/* Navigation Layer */}
       <Navbar theme={theme} setTheme={setTheme} />
 
-      {/* Fullscreen Video Hero Area */}
-      <Hero theme={theme} />
+      {!isFullGalleryPage ? (
+        <>
+          {/* Fullscreen Video Hero Area */}
+          <Hero theme={theme} />
 
-      {/* About/Design Credo Specifications */}
-      <AboutSection theme={theme} />
+          {/* About/Design Credo Specifications */}
+          <AboutSection theme={theme} />
 
-      {/* Interative Asymmetric Portfolio Display */}
-      <PortfolioGrid 
-        theme={theme} 
-        onSelectProject={setSelectedProject} 
-        projectsList={projectsList} 
-        saveProjectsList={saveProjectsList} 
-        isAdmin={isAdmin} 
-      />
+          {/* Interactive Curated Best of the Best Portfolio Display */}
+          <PortfolioGrid 
+            theme={theme} 
+            onSelectProject={setSelectedProject} 
+            projectsList={projectsList} 
+            saveProjectsList={saveProjectsList} 
+            isAdmin={isAdmin} 
+            isFullGalleryView={false}
+            setIsFullGalleryView={setIsFullGalleryPage}
+          />
+        </>
+      ) : (
+        <div className="pt-24 min-h-[85vh] animate-fade-in" id="complete-gallery-showroom">
+          {/* Dedicated Showroom Banner */}
+          <div className="max-w-7xl mx-auto px-6 md:px-16 pt-10 pb-2 text-center lg:text-left">
+            <div className="flex items-center justify-center lg:justify-start gap-2 font-mono text-zinc-500 text-xs sm:text-sm uppercase tracking-widest font-semibold mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+              PORTFOLIO COMPLETE ARCHIVES
+            </div>
+            <h1 className={`text-4xl sm:text-6xl font-bold font-display tracking-tight leading-none uppercase ${
+              theme === 'dark' ? 'text-white' : 'text-zinc-950'
+            }`}>
+              THE COMPLETE SHOWROOM
+            </h1>
+            <p className={`mt-4 text-xs sm:text-sm max-w-2xl leading-relaxed mx-auto lg:mx-0 ${
+              theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'
+            }`}>
+              Telusuri seluruh koleksi pameran multimedia, komersil, dan eksplorasi CGI mandiri kami secara lengkap di sini. Gunakan panel filter kategori untuk memilah karya yang Anda kehendaki.
+            </p>
+          </div>
+
+          <PortfolioGrid 
+            theme={theme} 
+            onSelectProject={setSelectedProject} 
+            projectsList={projectsList} 
+            saveProjectsList={saveProjectsList} 
+            isAdmin={isAdmin} 
+            isFullGalleryView={true}
+            setIsFullGalleryView={setIsFullGalleryPage}
+          />
+        </div>
+      )}
 
       {/* Direct Sync Contacts Form Unit */}
       <FooterSection theme={theme} />
